@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "natural-computing-tasks"
+version = "0.1.0"
+description = ""
+authors = ["Gabriel Soares Baptista <gsoaresbaptista@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+natural-computing = {git = "https://github.com/gsoaresbaptista/natural-computing"}
+
+
+[tool.poetry.group.dev.dependencies]
+blue = "^0.9.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
