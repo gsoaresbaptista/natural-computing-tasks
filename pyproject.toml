@@ -12,6 +12,7 @@ natural-computing = {git = "https://github.com/gsoaresbaptista/natural-computing
 
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"
+isort = "^5.12.0"
 
 [build-system]
 requires = ["poetry-core"]
