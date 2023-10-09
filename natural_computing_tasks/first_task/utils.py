@@ -1,5 +1,8 @@
-from typing import Tuple
+from typing import Tuple, List, Dict, Any
 import numpy as np
+
+
+from natural_computing import NeuralNetwork, LayerFactory
 
 
 def create_window(
@@ -45,6 +48,31 @@ def split_train_test(
     )
 
 
+class StandardScaler:
+    def __init__(self, centered_on_zero: bool = True) -> None:
+        self._mean = 0
+        self._std = 0
+        self._fitted = False
+        self._centered_on_zero = centered_on_zero
+
+    def fit(self, x: np.ndarray) -> None:
+        self._mean = np.mean(x)
+        self._std = np.std(x)
+        self._fitted = True
+
+    def transform(self, x: np.ndarray) -> np.ndarray:
+        x_transformed = (x - self._mean) / self._std
+
+        if not self._centered_on_zero:
+            x_transformed = 2 * x_transformed - 1
+
+        return x_transformed
+
+    def fit_transform(self, x: np.ndarray) -> np.ndarray:
+        self.fit(x)
+        return self.transform(x)
+
+
 class MinMaxScaler:
     def __init__(self, centered_on_zero: bool = True) -> None:
         self._min = 0
@@ -68,3 +96,55 @@ class MinMaxScaler:
     def fit_transform(self, x: np.ndarray) -> np.ndarray:
         self.fit(x)
         return self.transform(x)
+
+
+def unpack_network(
+    model: NeuralNetwork,
+) -> Tuple[np.ndarray, List[Dict[str, Any]]]:
+    weights, decode_guide = [], []
+
+    # unpack all layers
+    for layer in model._layers:
+        weights.append(layer._weights.reshape(-1, 1))
+        weights.append(layer._biases.reshape(-1, 1))
+        decode_guide.append(
+            {
+                'weights_shape': layer._weights.shape,
+                'biases_shape': layer._biases.shape,
+                'activation': layer._activation,
+            }
+        )
+
+    return np.concatenate(weights), decode_guide
+
+
+def pack_network(
+    weights_vector: np.ndarray, decode_guide: List[Dict[str, Any]]
+) -> NeuralNetwork:
+    module = NeuralNetwork(0)
+
+    for layer in decode_guide:
+        x, y = layer['weights_shape']
+        a, b = layer['biases_shape']
+
+        # unpack weights
+        weights = weights_vector[: x * y].reshape((x, y))
+        weights_vector = weights_vector[x * y:]
+
+        # unpack biases
+        biases = weights_vector[: a * b].reshape((a, b))
+        weights_vector = weights_vector[a * b:]
+
+        # add layer to network
+        activation = layer['activation'].__name__
+        module.add_layer(
+            LayerFactory.dense_layer(
+                weights.shape[1], weights.shape[0], activation=activation
+            )
+        )
+
+        # change weights
+        module._layers[-1]._weights = weights
+        module._layers[-1]._biases = biases
+
+    return module

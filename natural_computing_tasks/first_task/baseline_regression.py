@@ -49,6 +49,8 @@ if __name__ == '__main__':
         verbose=50,
     )
 
+    nn.save('best_model.pkl')
+
     x_test = np.loadtxt('data/regression/x_teste.txt').reshape((-1, 1))
     x_test_std = (x_test - x_train.min(axis=0)) / (
         x_train.max(axis=0) - x_train.min(axis=0)
@@ -56,6 +58,7 @@ if __name__ == '__main__':
     x_test_std = 2 * x_test_std - 1
 
     plt.scatter(x_train, y_train)
-    plt.scatter(x_test, nn.predict(x_test_std), c='red')
-    plt.plot(x_test, nn.predict(x_test_std), c='green')
+    # plt.scatter(x_test, nn.predict(x_test_std), c='red')
+    plt.scatter(x_train, nn.predict(x_std), c='red')
+    # plt.plot(x_test, nn.predict(x_test_std), c='green')
     plt.show()

@@ -57,7 +57,12 @@ if __name__ == '__main__':
                 regularization_strength=1e-4,
             ),
             LayerFactory.dense_layer(
-                64, 1, activation='linear', regularization_strength=1e-4
+                64,
+                1,
+                activation='linear',
+                weights_initializer='glorot_normal',
+                biases_initializer='glorot_normal',
+                regularization_strength=1e-4,
             ),
         ]
     )
