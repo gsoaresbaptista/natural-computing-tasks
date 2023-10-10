@@ -73,4 +73,4 @@ if __name__ == '__main__':
             plt.scatter(x_test, nn.predict(x_test_std), c='red')
             plt.plot(x_test, nn.predict(x_test_std), c='green')
 
-        plt.show()
+        plt.show()  # type: ignore
