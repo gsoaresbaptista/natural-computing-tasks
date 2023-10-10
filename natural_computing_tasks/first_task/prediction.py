@@ -11,13 +11,14 @@ from natural_computing import (
     fetch_file_and_convert_to_array,
     MinMaxScaler,
     ParticleSwarmOptimization,
+    RealGeneticAlgorithm,
     RootMeanSquaredErrorForNN,
     r2_score,
 )
 
 
 # experiment settings
-plot_result = False
+plot_result = True
 curve_plot = 'test_curve'  # train_curve or test_curve
 window_size = 7
 n_iterations = 10
@@ -46,6 +47,11 @@ def parse_args():
         '--return-r2-score',
         action='store_true',
         help='Return the r2 score',
+    )
+    parser.add_argument(
+        '--alternative-approach',
+        action='store_true',
+        help='Use the alternative approach to the problem',
     )
     return parser.parse_args()
 
@@ -102,18 +108,26 @@ if __name__ == '__main__':
     rmse = RootMeanSquaredErrorForNN(
         x_train_shuffled, y_train_shuffled, decode_guide, 1e-4
     )
-    pso = ParticleSwarmOptimization(
-        20,
-        n_iterations,
-        0.8,
-        0.5,
-        0.5,
-        [[-1, 1] for _ in range(individual_shape)],
-    )
-    pso.optimize(rmse)
+    if args.alternative_approach:
+        method = RealGeneticAlgorithm(
+            100, n_iterations, [[-1.0, 1.0] for _ in range(individual_shape)]
+        )
+        attr_name = 'best_global_phenotype'
+    else:
+        method = ParticleSwarmOptimization(
+            20,
+            n_iterations,
+            0.8,
+            0.5,
+            0.5,
+            [[-1.0, 1.0] for _ in range(individual_shape)],
+        )
+        attr_name = 'best_global_position'
+
+    method.optimize(rmse)
 
     # get best model
-    best_weights = np.array(pso.best_global_position).reshape(-1, 1)
+    best_weights = np.array(getattr(method, attr_name)).reshape(-1, 1)
     model = pack_network(best_weights, decode_guide)
 
     # compute r-squared score
@@ -155,7 +169,7 @@ if __name__ == '__main__':
         model.save(args.model_path)
 
     if args.return_best_loss:
-        best_loss = pso.best_global_value
+        best_loss = method.best_global_value
         print('best loss', best_loss)
 
     if args.return_r2_score:

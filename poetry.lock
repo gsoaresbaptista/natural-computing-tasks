@@ -685,7 +685,7 @@ requests = "^2.31.0"
 type = "git"
 url = "https://github.com/gsoaresbaptista/natural-computing.git"
 reference = "HEAD"
-resolved_reference = "3a5347404b386be9eec511ebe1fc9b1726c4f0a3"
+resolved_reference = "2150311e8d8c416cc9ceef5c3c000514a0464e8f"
 
 [[package]]
 name = "numpy"

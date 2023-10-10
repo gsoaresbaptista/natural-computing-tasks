@@ -5,6 +5,7 @@ from natural_computing import (
     LayerFactory,
     NeuralNetwork,
     BareBonesParticleSwarmOptimization,
+    RealGeneticAlgorithm,
     MinMaxScaler,
     pack_network,
     unpack_network,
@@ -43,6 +44,11 @@ def parse_args():
         '--return-r2-score',
         action='store_true',
         help='Return the r2 score',
+    )
+    parser.add_argument(
+        '--alternative-approach',
+        action='store_true',
+        help='Use the alternative approach to the problem',
     )
     return parser.parse_args()
 
@@ -97,14 +103,21 @@ if __name__ == '__main__':
     rmse = RootMeanSquaredErrorForNN(
         x_train_shuffled, y_train_shuffled, decode_guide, 1e-4
     )
-    bbpso = BareBonesParticleSwarmOptimization(
-        20, n_iterations, [[-1.0, 1.0] for _ in range(individual_shape)]
-    )
+    if args.alternative_approach:
+        method = RealGeneticAlgorithm(
+            100, n_iterations, [[-1.0, 1.0] for _ in range(individual_shape)]
+        )
+        attr_name = 'best_global_phenotype'
+    else:
+        method = BareBonesParticleSwarmOptimization(
+            20, n_iterations, [[-1.0, 1.0] for _ in range(individual_shape)]
+        )
+        attr_name = 'best_global_position'
 
-    bbpso.optimize(rmse)
+    method.optimize(rmse)
 
     # get best model
-    best_weights = np.array(bbpso.best_global_position).reshape(-1, 1)
+    best_weights = np.array(getattr(method, attr_name)).reshape(-1, 1)
     model = pack_network(best_weights, decode_guide)
 
     # compute r-squared score
@@ -130,7 +143,7 @@ if __name__ == '__main__':
         model.save(args.model_path)
 
     if args.return_best_loss:
-        best_loss = bbpso.best_global_value
+        best_loss = method.best_global_value
         print('best loss', best_loss)
 
     if args.return_r2_score:
