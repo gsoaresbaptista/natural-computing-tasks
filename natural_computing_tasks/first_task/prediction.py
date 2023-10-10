@@ -21,7 +21,7 @@ from natural_computing import (
 plot_result = True
 curve_plot = 'test_curve'  # train_curve or test_curve
 window_size = 7
-n_iterations = 10
+n_iterations = 5000
 data_path = (
     'https://raw.githubusercontent.com/gsoaresbaptista/'
     'natural-computing/main/data/prediction'

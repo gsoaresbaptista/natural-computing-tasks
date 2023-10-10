@@ -16,8 +16,8 @@ from natural_computing import (
 plot_result = False
 curve_plot = 'test_curve'  # train_curve or test_curve
 window_size = 7
-batch_size = 32
-n_epochs = 10
+batch_size = 320
+n_epochs = 5000
 train_percentage = 0.8
 data_path = (
     'https://raw.githubusercontent.com/gsoaresbaptista/'

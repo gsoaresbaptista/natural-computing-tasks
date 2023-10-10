@@ -9,7 +9,7 @@ experiment_type = [
     'baseline_regression',
 ]
 alternative_approach = [True, True, False, False]
-n_exp = 2
+n_exp = 20
 
 
 # r2 for regression is computed with train data

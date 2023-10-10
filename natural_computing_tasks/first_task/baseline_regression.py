@@ -14,8 +14,8 @@ from natural_computing import (
 # experiment settings
 plot_result = False
 curve_plot = 'test_curve'  # train_curve or test_curve
-batch_size = 32
-n_epochs = 10
+batch_size = 320
+n_epochs = 5000
 data_path = (
     'https://raw.githubusercontent.com/gsoaresbaptista/'
     'natural-computing/main/data/regression'
