@@ -1,30 +1,34 @@
 import matplotlib.pyplot as plt
 import numpy as np
-
-from natural_computing.utils import LayerFactory
-from natural_computing.neural_network import (
+from natural_computing import (
+    LayerFactory,
     NeuralNetwork,
-    rmse,
+    fetch_file_and_convert_to_array,
     learning_rate_staircase_decay,
+    rmse,
+    MinMaxScaler,
 )
 
-np.random.seed(42)
+# experiment settings
+plot_result = False
+curve_plot = 'test_curve'  # train_curve or test_curve
+data_path = (
+    'https://raw.githubusercontent.com/gsoaresbaptista/'
+    'natural-computing/main/data/regression'
+)
 
 
 if __name__ == '__main__':
-    x_train = np.loadtxt('data/regression/x_treinamento.txt').reshape((-1, 1))
-    y_train = np.loadtxt('data/regression/y_treinamento.txt').reshape((-1, 1))
+    x_train = fetch_file_and_convert_to_array(f'{data_path}/x_train.txt')
+    y_train = fetch_file_and_convert_to_array(f'{data_path}/y_train.txt')
     input_dim, output_dim = 1, 1
 
     # min max scaling
-    x_std = (x_train - x_train.min(axis=0)) / (
-        x_train.max(axis=0) - x_train.min(axis=0)
-    )
-    x_std = 2 * x_std - 1
+    x_train_std = MinMaxScaler(centered_on_zero=False).fit_transform(x_train)
 
     # shuffle data
     indices = np.random.randint(0, x_train.shape[0], x_train.shape[0])
-    x_shuffled, y_shuffled = x_std[indices], y_train[indices]
+    x_shuffled, y_shuffled = x_train_std[indices], y_train[indices]
 
     nn = NeuralNetwork(
         learning_rate=1e-1,
@@ -51,14 +55,22 @@ if __name__ == '__main__':
 
     nn.save('best_model.pkl')
 
-    x_test = np.loadtxt('data/regression/x_teste.txt').reshape((-1, 1))
+    x_test = fetch_file_and_convert_to_array(f'{data_path}/x_test.txt')
+
     x_test_std = (x_test - x_train.min(axis=0)) / (
         x_train.max(axis=0) - x_train.min(axis=0)
     )
     x_test_std = 2 * x_test_std - 1
 
-    plt.scatter(x_train, y_train)
-    # plt.scatter(x_test, nn.predict(x_test_std), c='red')
-    plt.scatter(x_train, nn.predict(x_std), c='red')
-    # plt.plot(x_test, nn.predict(x_test_std), c='green')
-    plt.show()
+    if plot_result:
+        # plot train or test curve
+        plt.scatter(x_train, y_train)
+
+        if curve_plot == 'train_curve':
+            plt.scatter(x_train, nn.predict(x_train_std), c='red')
+
+        if curve_plot == 'test_curve':
+            plt.scatter(x_test, nn.predict(x_test_std), c='red')
+            plt.plot(x_test, nn.predict(x_test_std), c='green')
+
+        plt.show()
