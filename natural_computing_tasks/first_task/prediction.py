@@ -1,40 +1,28 @@
-from typing import List, Tuple
-
 import matplotlib.pyplot as plt
 import numpy as np
-from natural_computing import BaseFunction, LayerFactory, NeuralNetwork
-from natural_computing.optimization import (
-    ParticleSwarmOptimization,
-)
-
-from utils import (
-    MinMaxScaler,
-    create_window,
+from natural_computing import (
+    LayerFactory,
+    NeuralNetwork,
     pack_network,
-    split_train_test,
     unpack_network,
+    create_window,
+    split_train_test,
+    fetch_file_and_convert_to_array,
+    MinMaxScaler,
+    ParticleSwarmOptimization,
+    RootMeanSquaredErrorForNN,
 )
 
 
-class RootMeanSquaredError(BaseFunction):
-    def __init__(
-        self,
-        x_data: np.ndarray,
-        y_data: np.ndarray,
-        decode_guide: List[Tuple[int, int]],
-    ):
-        super().__init__()
-        self.x_data = x_data
-        self.y_data = y_data
-        self.decode_guide = decode_guide
-
-    def evaluate(self, nn_weights: List[float]) -> float:
-        nn_weights = np.array(nn_weights).reshape(-1, 1)
-        nn = pack_network(nn_weights, self.decode_guide)
-        error: float = np.sqrt(
-            np.mean((self.y_data - nn.predict(self.x_data)) ** 2)
-        )
-        return error
+# experiment settings
+plot_result = False
+curve_plot = 'test_curve'  # train_curve or test_curve
+window_size = 7
+n_iterations = 1000
+data_path = (
+    'https://raw.githubusercontent.com/gsoaresbaptista/'
+    'natural-computing/main/data/prediction'
+)
 
 
 if __name__ == '__main__':
@@ -50,10 +38,9 @@ if __name__ == '__main__':
     vector, decode_guide = unpack_network(nn)
 
     # data
-    file_path = 'data/prediction/daily-max-temperatures.csv'
-    data = np.loadtxt(
-        file_path, delimiter=',', skiprows=1, usecols=(1,), dtype=float
-    )
+    data = fetch_file_and_convert_to_array(
+        f'{data_path}/daily-max-temperatures.csv', skiprows=1, usecols=[1]
+    ).squeeze()
 
     # create window to make prediction
     window_size = 7
@@ -86,11 +73,16 @@ if __name__ == '__main__':
             for layer_dict in decode_guide
         ]
     )
-    rmse = RootMeanSquaredError(
-        x_train_shuffled, y_train_shuffled, decode_guide
+    rmse = RootMeanSquaredErrorForNN(
+        x_train_shuffled, y_train_shuffled, decode_guide, 1e-4
     )
     pso = ParticleSwarmOptimization(
-        20, 1000, 0.8, 0.5, 0.5, [[-1, 1] for _ in range(individual_shape)]
+        20,
+        n_iterations,
+        0.8,
+        0.5,
+        0.5,
+        [[-1, 1] for _ in range(individual_shape)],
     )
     pso.optimize(rmse)
 
@@ -99,18 +91,30 @@ if __name__ == '__main__':
     model = pack_network(best_weights, decode_guide)
 
     # plot curves
-    plt.plot(range(len(y_train)), y_train, c='green')
-    plt.plot(
-        range(len(y_train), len(y_train) + len(y_test)),
-        y_test,
-        c='blue',
-        label='real',
-    )
-    plt.plot(
-        range(len(y_train), len(y_train) + len(y_test)),
-        model.predict(x_test_std),
-        c='red',
-        label='predicted',
-    )
-    plt.legend()
-    plt.show()
+    if plot_result:
+        plt.plot(range(len(y_train)), y_train, c='green')
+
+        if curve_plot == 'test_curve':
+            plt.plot(
+                range(len(y_train), len(y_train) + len(y_test)),
+                y_test,
+                c='blue',
+                label='real',
+            )
+            plt.plot(
+                range(len(y_train), len(y_train) + len(y_test)),
+                model.predict(x_test_std),
+                c='red',
+                label='predicted',
+            )
+
+        if curve_plot == 'train_curve':
+            plt.plot(
+                range(len(y_train)),
+                model.predict(x_train_std),
+                c='red',
+                label='predicted',
+            )
+
+        plt.legend()
+        plt.show()
