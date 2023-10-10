@@ -1,3 +1,4 @@
+import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 from natural_computing import (
@@ -9,20 +10,45 @@ from natural_computing import (
     unpack_network,
     RootMeanSquaredErrorForNN,
     fetch_file_and_convert_to_array,
+    r2_score,
 )
 
 
 # experiment settings
 plot_result = False
 curve_plot = 'test_curve'  # train_curve or test_curve
-n_iterations = 10000
+n_iterations = 100
 data_path = (
     'https://raw.githubusercontent.com/gsoaresbaptista/'
     'natural-computing/main/data/regression'
 )
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Neural Network Training Script'
+    )
+    parser.add_argument(
+        '--model-path',
+        type=str,
+        default=None,
+        help='Filepath to save the trained model',
+    )
+    parser.add_argument(
+        '--return-best-loss',
+        action='store_true',
+        help='Return the best loss from algorithm',
+    )
+    parser.add_argument(
+        '--return-r2-score',
+        action='store_true',
+        help='Return the r2 score',
+    )
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
+    args = parse_args()
     nn = NeuralNetwork(0)
     nn.add_layer(
         [
@@ -81,15 +107,31 @@ if __name__ == '__main__':
     best_weights = np.array(bbpso.best_global_position).reshape(-1, 1)
     model = pack_network(best_weights, decode_guide)
 
+    # compute r-squared score
+    y_pred = model.predict(x_test_std)
+    y_train_pred = model.predict(x_train_std)
+    r2_result = r2_score(y_train, y_train_pred)
+
     # plot curves
     if plot_result:
         plt.scatter(x_train, y_train, c='blue')
 
         if curve_plot == 'train_curve':
-            plt.plot(x_train, model.predict(x_train_std), c='red')
+            plt.plot(x_train, y_train_pred, c='red')
 
         if curve_plot == 'test_curve':
-            plt.scatter(x_test, model.predict(x_test_std), c='green')
-            plt.plot(x_test, model.predict(x_test_std), c='red')
+            plt.scatter(x_test, y_pred, c='green')
+            plt.plot(x_test, y_pred, c='red')
 
         plt.show()
+
+    # process arguments
+    if args.model_path is not None:
+        model.save(args.model_path)
+
+    if args.return_best_loss:
+        best_loss = bbpso.best_global_value
+        print('best loss', best_loss)
+
+    if args.return_r2_score:
+        print('r2 score', r2_result)

@@ -1,3 +1,4 @@
+import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 from natural_computing import (
@@ -8,6 +9,7 @@ from natural_computing import (
     rmse,
     split_train_test,
     fetch_file_and_convert_to_array,
+    r2_score,
 )
 
 # experiment settings
@@ -23,7 +25,32 @@ data_path = (
 )
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Neural Network Training Script'
+    )
+    parser.add_argument(
+        '--model-path',
+        type=str,
+        default=None,
+        help='Filepath to save the trained model',
+    )
+    parser.add_argument(
+        '--return-best-loss',
+        action='store_true',
+        help='Return the best loss from algorithm',
+    )
+    parser.add_argument(
+        '--return-r2-score',
+        action='store_true',
+        help='Return the r2 score',
+    )
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
+    args = parse_args()
+
     # read only temperatures
     data = fetch_file_and_convert_to_array(
         f'{data_path}/daily-max-temperatures.csv', skiprows=1, usecols=[1]
@@ -85,7 +112,11 @@ if __name__ == '__main__':
         verbose=100,
         batch_size=batch_size,
     )
-    model.save('model_prediction.pkl')
+
+    # compute r-squared score
+    y_pred = model.predict(x_test_std)
+    y_train_pred = model.predict(x_train_std)
+    r2_result = r2_score(y_test, y_pred)
 
     if plot_result:
         # plot train or test curve
@@ -100,7 +131,7 @@ if __name__ == '__main__':
             )
             plt.plot(
                 range(len(y_train), len(y_train) + len(y_test)),
-                model.predict(x_test_std),
+                y_pred,
                 c='red',
                 label='predicted',
             )
@@ -114,10 +145,21 @@ if __name__ == '__main__':
             )
             plt.plot(
                 range(len(y_train)),
-                model.predict(x_train_std),
+                y_train_pred,
                 c='red',
                 label='predicted',
             )
 
         plt.legend()
         plt.show()  # type: ignore
+
+    # process arguments
+    if args.model_path is not None:
+        model.save(args.model_path)
+
+    if args.return_best_loss:
+        best_loss = rmse(y_train, y_train_pred, derivative=False)
+        print('best loss', best_loss)
+
+    if args.return_r2_score:
+        print('r2 score', r2_result)

@@ -1,3 +1,4 @@
+import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 from natural_computing import (
@@ -11,6 +12,7 @@ from natural_computing import (
     MinMaxScaler,
     ParticleSwarmOptimization,
     RootMeanSquaredErrorForNN,
+    r2_score,
 )
 
 
@@ -18,14 +20,38 @@ from natural_computing import (
 plot_result = False
 curve_plot = 'test_curve'  # train_curve or test_curve
 window_size = 7
-n_iterations = 1000
+n_iterations = 10
 data_path = (
     'https://raw.githubusercontent.com/gsoaresbaptista/'
     'natural-computing/main/data/prediction'
 )
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description='Neural Network Training Script'
+    )
+    parser.add_argument(
+        '--model-path',
+        type=str,
+        default=None,
+        help='Filepath to save the trained model',
+    )
+    parser.add_argument(
+        '--return-best-loss',
+        action='store_true',
+        help='Return the best loss from algorithm',
+    )
+    parser.add_argument(
+        '--return-r2-score',
+        action='store_true',
+        help='Return the r2 score',
+    )
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
+    args = parse_args()
     nn = NeuralNetwork(0)
     nn.add_layer(
         [
@@ -90,6 +116,11 @@ if __name__ == '__main__':
     best_weights = np.array(pso.best_global_position).reshape(-1, 1)
     model = pack_network(best_weights, decode_guide)
 
+    # compute r-squared score
+    y_pred = model.predict(x_test_std)
+    y_train_pred = model.predict(x_train_std)
+    r2_result = r2_score(y_test, y_pred)
+
     # plot curves
     if plot_result:
         plt.plot(range(len(y_train)), y_train, c='green')
@@ -103,7 +134,7 @@ if __name__ == '__main__':
             )
             plt.plot(
                 range(len(y_train), len(y_train) + len(y_test)),
-                model.predict(x_test_std),
+                y_pred,
                 c='red',
                 label='predicted',
             )
@@ -111,10 +142,21 @@ if __name__ == '__main__':
         if curve_plot == 'train_curve':
             plt.plot(
                 range(len(y_train)),
-                model.predict(x_train_std),
+                y_train_pred,
                 c='red',
                 label='predicted',
             )
 
         plt.legend()
         plt.show()
+
+    # process arguments
+    if args.model_path is not None:
+        model.save(args.model_path)
+
+    if args.return_best_loss:
+        best_loss = pso.best_global_value
+        print('best loss', best_loss)
+
+    if args.return_r2_score:
+        print('r2 score', r2_result)

@@ -1,0 +1,67 @@
+import os
+import subprocess
+import csv
+
+experiment_type = [
+    'regression',
+    'prediction',
+    'baseline_prediction',
+    'baseline_regression',
+]
+n_exp = 2
+
+
+# r2 for regression is computed with train data
+csv_head = ['experiment_type', 'iteration', 'best_rmse', 'r2_score']
+outputs_path = '/home/gabriel/Documents/git/natural-computing-tasks/outputs'
+csv_file_path = f'{outputs_path}/results.csv'
+rows = []
+
+
+for row_id, exp_type in enumerate(experiment_type):
+    for i in range(n_exp):
+        print(f'- Running {exp_type}.py, experiment number {i + 1}')
+
+        # create folders
+        if not os.path.exists(f'{outputs_path}/{exp_type}'):
+            os.makedirs(f'{outputs_path}/{exp_type}/models')
+
+        # create command
+        model_path = f'{outputs_path}/{exp_type}/models/model{i+1}.pkl'
+        command = (
+            f'python {exp_type}.py '
+            f'--model-path {model_path}'
+            ' --return-best-loss --return-r2-score',
+        )
+
+        # run command
+        cur_exp = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+        new_row = {}
+        new_row['experiment_type'] = exp_type
+        new_row['iteration'] = i + 1
+
+        # read data from the stdout
+        for line in cur_exp.stdout:
+            line = line.decode().strip()
+
+            if line.startswith('best loss'):
+                new_row['best_rmse'] = line.replace('best loss ', '')
+
+            if line.startswith('r2 score'):
+                new_row['r2_score'] = line.replace('r2 score ', '')
+
+        # add the path
+        new_row['model_path'] = model_path
+
+        # wait for the subprocess to complete
+        cur_exp.wait()
+        rows.append(new_row)
+
+        # convert dict to lists
+        rows_lst = [list(row.values()) for row in rows]
+        rows_lst = [csv_head, *rows_lst]
+
+        with open(csv_file_path, 'w') as csv_file:
+            csv_writer = csv.writer(csv_file)
+            for row in rows_lst:
+                csv_writer.writerow(row)
