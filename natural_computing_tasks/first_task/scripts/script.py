@@ -13,7 +13,7 @@ n_exp = 20
 
 
 # r2 for regression is computed with train data
-csv_head = ['experiment_type', 'iteration', 'best_rmse', 'r2_score']
+csv_head = ['experiment_type', 'iteration', 'best_rmse', 'r2_score', 'model_path']
 outputs_path = '/home/gabriel/Documents/git/natural-computing-tasks/outputs'
 csv_file_path = f'{outputs_path}/results.csv'
 rows = []
