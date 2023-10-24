@@ -59,7 +59,7 @@ if __name__ == '__main__':
     scaler.fit(x_train)
 
     x_train_std = scaler.transform(x_train)
-    x_test_std = scaler.transform(x_train)
+    x_test_std = scaler.transform(x_test)
 
     # shuffle data
     indices = np.random.randint(0, x_train.shape[0], x_train.shape[0])
