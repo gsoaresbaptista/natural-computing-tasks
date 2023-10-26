@@ -83,26 +83,36 @@ class ClassifyFuzzy(BaseFunction):
         return 1 - result
 
 
+class FuzzyExperiment():
+    def __init__(self, universe, optimization_method, fuzzy_function) -> None:
+        self.universe = universe
+        self.optimization_method_str = optimization_method
+        self.optimization_method = self.initiate_optimization_method(optimization_method)
+        self.fuzzy_function = fuzzy_function
+    
+    def initiate_optimization_method(self, optimization_method):
+        if self.optimization_method_str == "GA":
+            return RealGeneticAlgorithm(
+                100, 500, [[0.0, 1.0] for _ in range(4)]
+            )
+        
+        return BareBonesParticleSwarmOptimization(20, 500, [[0.0, 1.0] for _ in range(4)])
+    
+    def run(self) -> float:
+        self.optimization_method.optimize(self.fuzzy_function)
+
+        if self.optimization_method_str == "GA":
+            return self.optimization_method.best_global_phenotype
+        
+        return self.optimization_method.best_global_position
+    
 if __name__ == "__main__":
     universe = np.arange(0, 1.01, 0.01)
     fuzzy_function = ClassifyFuzzy(universe)
+    experiment = FuzzyExperiment(universe, "GA", fuzzy_function)
     
-    ga = RealGeneticAlgorithm(
-        100, 1000, [[0.0, 1.0] for _ in range(4)]
-    )
 
-    ga.optimize(fuzzy_function)
-
-    ga_best = ga.best_global_phenotype
+    ga_best = experiment.run()
     ga_accuracy = (1 - fuzzy_function.evaluate(ga_best)) * 100
     print("----Real Genetic Algorithm----")
     print(f"The best phenotype ({ga_best}) produced the solution with accuracy: {ga_accuracy:.2f}%")
-    
-
-    pso = BareBonesParticleSwarmOptimization(80, 1000, [[0.0, 1.0] for _ in range(4)])
-    pso.optimize(fuzzy_function)
-
-    pso_best = pso.best_global_position
-    pso_accuracy = (1 - fuzzy_function.evaluate(pso_best)) * 100
-    print("----Bare Bones Particle Swarm Optimization----")
-    print(f"The best position ({pso_best}) produced the solution with accuracy: {pso_accuracy:.2f}%")
