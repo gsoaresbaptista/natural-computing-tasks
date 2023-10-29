@@ -1,3 +1,4 @@
+import numpy as np
 from evolutionary_programming.neural_network import encode_neural_network
 from evolutionary_programming.objective_function import (
     RootMeanSquaredErrorForNN, R2ScoreForNN
@@ -16,6 +17,7 @@ from experiments_setup import (
 class RegressionExperiment:
     def __init__(self, optimization_method: str):
         self._optimization_method_name = optimization_method
+        self._backpropagation = False
 
         # get dimensions
         module = NeuralNetworkArchitectures.regression_architecture()
@@ -51,26 +53,48 @@ class RegressionExperiment:
                     max_stagnation_interval=5,
                     bounded=False,
                 )
+            case 'BACKPROPAGATION':
+                self._backpropagation = True
+                return ()
             case _:
                 raise ValueError(
                     f'Method {self._optimization_method_name} '
-                    'is not recognized. Choose "GA" or "PSO".'
+                    'is not recognized. Choose "BACKPROPAGATION",'
+                    ' "GA" or "PSO".'
                 )
 
     def run(self, dataset) -> float:
         # get data from web
-        (x_train, y_train), (x_test, _) = DatasetsDownloader.regression()
+        dataset = DatasetsDownloader.regression()
+        (x_train, y_train), (x_test, _) = dataset['processed']
 
-        rmse = RootMeanSquaredErrorForNN(
-            x_train, y_train, self._decode_guide, REGRESSION_REGULARIZATION)
+        if self._backpropagation:
+            # optimize neural networks using backpropagation algorithm
+            model = NeuralNetworkArchitectures.regression_architecture()
+            model.fit(x_train, y_train, epochs=3)
 
-        self._optimization_method.optimize(2000, rmse)
-        best_individual = self._optimization_method.best_individual
-        best_fitness = self._optimization_method.best_fitness
-        history = self._optimization_method.history
+            # compute r2 score
+            ss_res = np.sum(y_train - model.predict(x_train))**2
+            ss_tot = np.sum(y_train - np.mean(y_train))**2
+            r2_score = 1 - (ss_res / ss_tot)
 
-        r2 = R2ScoreForNN(x_train, y_train, self._decode_guide, 0.0)
-        r2_score = r2.evaluate(best_individual)
+            # get data
+            best_fitness = model.evaluate(x_train, y_train)
+            best_individual, _ = encode_neural_network(model)
+            history = []
+        else:
+            # optimize neural networks using RMSE function
+            rmse = RootMeanSquaredErrorForNN(
+                x_train, y_train, self._decode_guide,
+                REGRESSION_REGULARIZATION)
+            self._optimization_method.optimize(10, rmse)
+
+            # get data
+            best_individual = self._optimization_method.best_individual
+            best_fitness = self._optimization_method.best_fitness
+            history = self._optimization_method.history
+            r2 = R2ScoreForNN(x_train, y_train, self._decode_guide, 0.0)
+            r2_score = r2.evaluate(best_individual)
 
         return (
             r2_score,
@@ -78,3 +102,9 @@ class RegressionExperiment:
             best_individual,
             history,
         )
+
+
+if __name__ == '__main__':
+    # example of use
+    exp = RegressionExperiment('BACKPROPAGATION')
+    exp.run('')

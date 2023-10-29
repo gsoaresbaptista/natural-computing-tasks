@@ -83,9 +83,7 @@ class DecodeGuides:
 
 class DatasetsDownloader:
     @staticmethod
-    def prediction(
-        temperature: str,
-    ) -> np.ndarray:
+    def prediction(temperature: str) -> np.ndarray:
         # download data
         column_names, temperatures = fetch_csv_to_numpy(
             temperatures_url, columns=[1 if temperature == 'min' else 2]
@@ -94,9 +92,9 @@ class DatasetsDownloader:
         # preprocess data
         scaler = MinMaxScaler()
         scaler.fit(temperatures)
-        temperatures_scaled = scaler.transform(temperatures)
+        temperatures = scaler.transform(temperatures)
 
-        x, y = create_window(temperatures_scaled, WINDOW_SIZE)
+        x, y = create_window(temperatures, WINDOW_SIZE)
         (x_train, y_train), (x_test, y_test) = split_train_test(
             x, y, train_percentage=0.8, sequential=True
         )
@@ -113,30 +111,28 @@ class DatasetsDownloader:
         }
 
     @staticmethod
-    def regression(
-        scaled: bool = True,
-        shuffle: bool = True,
-    ) -> np.ndarray:
+    def regression() -> np.ndarray:
         # download data
-        column_names, x_trn, y_trn = fetch_csv_to_numpy(
+        column_names, x_train, y_train = fetch_csv_to_numpy(
             regression_train_url, columns=[0, 1]
         )
-
-        column_names, x_tst = fetch_csv_to_numpy(
+        column_names, x_test = fetch_csv_to_numpy(
             regression_test_url, columns=[0]
         )
 
-        if scaled:
-            scaler = MinMaxScaler()
-            scaler.fit(x_trn)
-            x_trn = 2 * scaler.transform(x_trn) - 1
-            x_tst = 2 * scaler.transform(x_tst) - 1
+        # preprocess data
+        scaler = MinMaxScaler()
+        scaler.fit(x_train)
+        x_train = scaler.transform(x_train)
+        x_test = scaler.transform(x_test)
 
-        if shuffle:
-            indices = np.random.choice(
-                range(len(x_trn)), len(x_trn), replace=False
-            )
-            x_trn = x_trn[indices]
-            y_trn = y_trn[indices]
+        size, rnd = len(x_train), np.random.RandomState(0)
+        indices = rnd.choice(range(size), size, replace=False)
+        x_train = x_train[indices]
+        y_train = y_train[indices]
 
-        return (x_trn, y_trn), (x_tst, None)
+        return {
+            'indices': np.argsort(indices),
+            'processed': ((x_train, y_train), (x_test, None)),
+            'inverse_fn': lambda x: scaler.inverse_transform(x),
+        }

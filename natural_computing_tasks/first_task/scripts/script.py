@@ -12,7 +12,7 @@ from contextlib import redirect_stdout
 
 # settings
 iterations = 1
-optimization_methods = ['GA', 'PSO']
+optimization_methods = ['GA', 'PSO', 'BACKPROPAGATION']
 outputs_path = '/home/gabriel/Documents/git/natural-computing-tasks/outputs'
 
 
