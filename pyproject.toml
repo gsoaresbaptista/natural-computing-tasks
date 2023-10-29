@@ -6,10 +6,12 @@ authors = ["Gabriel Soares Baptista <gsoaresbaptista@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.11,<3.12"
 scikit-learn = "^1.3.1"
 scikit-opt = "^0.6.6"
-natural-computing = {git = "https://github.com/gsoaresbaptista/natural-computing.git"}
+matplotlib = "^3.8.0"
+pandas = "^2.1.2"
+evolutionary-programming = "0.7.1"
 
 
 [tool.poetry.group.dev.dependencies]
