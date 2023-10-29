@@ -72,7 +72,7 @@ class PredictionExperiment:
         if self._backpropagation:
             # optimize neural networks using backpropagation algorithm
             model = NeuralNetworkArchitectures.prediction_architecture()
-            model.fit(x_train, y_train, epochs=3)
+            model.fit(x_train, y_train, epochs=10000)
 
             # compute r2 score
             ss_res = np.sum(y_test - model.predict(x_test))**2
@@ -88,7 +88,7 @@ class PredictionExperiment:
             rmse = RootMeanSquaredErrorForNN(
                 x_train, y_train, self._decode_guide,
                 PREDICTION_REGULARIZATION)
-            self._optimization_method.optimize(10, rmse)
+            self._optimization_method.optimize(5000, rmse)
 
             # get data
             best_individual = self._optimization_method.best_individual

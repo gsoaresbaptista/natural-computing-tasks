@@ -27,16 +27,16 @@ class RegressionExperiment:
 
     def _init_optimization_method(self) -> PopulationBasedOptimizer:
         # create bounds
-        min_bonds = [-1 for _ in range(self._dimensions)]
-        max_bonds = [+1 for _ in range(self._dimensions)]
+        min_bounds = [-1 for _ in range(self._dimensions)]
+        max_bounds = [+1 for _ in range(self._dimensions)]
 
         match self._optimization_method_name:
             case 'GA':
                 return GeneticAlgorithm(
                     100,
                     self._dimensions,
-                    min_bonds,
-                    max_bonds,
+                    min_bounds,
+                    max_bounds,
                     elitist_individuals=10,
                     mutation_probability=0.05,
                     bounded=False,
@@ -45,8 +45,8 @@ class RegressionExperiment:
                 return ParticleSwarm(
                     30,
                     self._dimensions,
-                    min_bonds,
-                    max_bonds,
+                    min_bounds,
+                    max_bounds,
                     cognitive=0.75,
                     social=0.25,
                     inertia=0.8,
@@ -71,7 +71,7 @@ class RegressionExperiment:
         if self._backpropagation:
             # optimize neural networks using backpropagation algorithm
             model = NeuralNetworkArchitectures.regression_architecture()
-            model.fit(x_train, y_train, epochs=3)
+            model.fit(x_train, y_train, epochs=10000)
 
             # compute r2 score
             ss_res = np.sum(y_train - model.predict(x_train))**2
@@ -87,7 +87,7 @@ class RegressionExperiment:
             rmse = RootMeanSquaredErrorForNN(
                 x_train, y_train, self._decode_guide,
                 REGRESSION_REGULARIZATION)
-            self._optimization_method.optimize(10, rmse)
+            self._optimization_method.optimize(5000, rmse)
 
             # get data
             best_individual = self._optimization_method.best_individual
