@@ -3,6 +3,7 @@ import io
 import gc
 import numpy as np
 import pandas as pd
+from time import perf_counter
 from prediction import PredictionExperiment
 from regression import RegressionExperiment
 from experiments_setup import DecodeGuides
@@ -22,6 +23,7 @@ experiment_data = {
     'Iteration': [],
     'R2 Score': [],
     'Best Fitness': [],
+    'Elapsed Time': [],
 }
 pred_decode_guide = DecodeGuides.prediction_guide()
 regr_decode_guide = DecodeGuides.regression_guide()
@@ -56,12 +58,15 @@ for problem, datasets in [
                         raise ValueError(f'Problem {problem} is unknown')
 
                     experiment = experiment_class(method)
+                    start_time = perf_counter()
                     r2, fitness, individual, history = experiment.run(dataset)
+                    end_time = perf_counter()
 
                 # save info into dict
                 experiment_data['Iteration'].append(i + 1)
                 experiment_data['R2 Score'].append(r2)
                 experiment_data['Best Fitness'].append(fitness)
+                experiment_data['Elapsed Time'].append(end_time - start_time)
                 experiment_data['Method'].append(
                     f'{problem}_{method}_{dataset}')
 
