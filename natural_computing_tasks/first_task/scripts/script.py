@@ -12,8 +12,8 @@ from contextlib import redirect_stdout
 
 
 # settings
-iterations = 20
-optimization_methods = ['GA', 'PSO', 'BACKPROPAGATION']
+iterations = 10
+optimization_methods = ['BACKPROPAGATION', 'GA', 'PSO']
 outputs_path = '/home/gabriel/Documents/git/natural-computing-tasks/outputs'
 
 
@@ -71,7 +71,7 @@ for problem, datasets in [
                     f'{problem}_{method}_{dataset}')
 
                 # save artifacts
-                folder_path = f'{outputs_path}/prediction/{method}_{dataset}'
+                folder_path = f'{outputs_path}/{problem}/{method}_{dataset}'
                 if not os.path.exists(folder_path):
                     os.makedirs(folder_path)
                 module = decode_neural_network(individual, decode_guide)

@@ -1,4 +1,3 @@
-import numpy as np
 from evolutionary_programming.neural_network import encode_neural_network
 from evolutionary_programming.objective_function import (
     RootMeanSquaredErrorForNN, R2ScoreForNN
@@ -72,15 +71,10 @@ class PredictionExperiment:
         if self._backpropagation:
             # optimize neural networks using backpropagation algorithm
             model = NeuralNetworkArchitectures.prediction_architecture()
-            model.fit(x_train, y_train, epochs=10000)
-
-            # compute r2 score
-            ss_res = np.sum(y_test - model.predict(x_test))**2
-            ss_tot = np.sum(y_test - np.mean(y_test))**2
-            r2_score = 1 - (ss_res / ss_tot)
+            model.fit(x_train, y_train, epochs=20000)
 
             # get data
-            best_fitness = model.evaluate(x_test, y_test)
+            best_fitness = model.evaluate(x_train, y_train)
             best_individual, _ = encode_neural_network(model)
             history = []
         else:
@@ -88,14 +82,15 @@ class PredictionExperiment:
             rmse = RootMeanSquaredErrorForNN(
                 x_train, y_train, self._decode_guide,
                 PREDICTION_REGULARIZATION)
-            self._optimization_method.optimize(5000, rmse)
+            self._optimization_method.optimize(2000, rmse)
 
             # get data
             best_individual = self._optimization_method.best_individual
             best_fitness = self._optimization_method.best_fitness
             history = self._optimization_method.history
-            r2 = R2ScoreForNN(x_test, y_test, self._decode_guide, 0.0)
-            r2_score = r2.evaluate(best_individual)
+
+        r2 = R2ScoreForNN(x_test, y_test, self._decode_guide, 0.0)
+        r2_score = r2.evaluate(best_individual)
 
         return (
             r2_score,
@@ -108,4 +103,4 @@ class PredictionExperiment:
 if __name__ == '__main__':
     # example of use
     exp = PredictionExperiment('BACKPROPAGATION')
-    exp.run('min')
+    exp.run('max')
