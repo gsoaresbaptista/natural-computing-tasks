@@ -283,13 +283,13 @@ tests = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
 name = "evolutionary-programming"
-version = "0.7.1"
+version = "0.7.2"
 description = ""
 optional = false
-python-versions = ">=3.11,<3.12"
+python-versions = ">=3.10,<3.12"
 files = [
-    {file = "evolutionary_programming-0.7.1-cp311-cp311-manylinux_2_38_x86_64.whl", hash = "sha256:e1841d47b38e62f9df103823c3ae5c594f012e3d23a6e596b90aa6b6e18958eb"},
-    {file = "evolutionary_programming-0.7.1.tar.gz", hash = "sha256:b1b19443e0324f1a3d5b038bd0863bef944f97c589428fb6ad75f7494819e654"},
+    {file = "evolutionary_programming-0.7.2-cp311-cp311-manylinux_2_38_x86_64.whl", hash = "sha256:49f8365cd0b148b5258641980b6043bc8983e33b53328ccfbcc78c36090e5f9d"},
+    {file = "evolutionary_programming-0.7.2.tar.gz", hash = "sha256:5e47fd7f41531d9d2ba1263b9c9cdc7b594ec7e1800e3d0d597fc928d28ea6e1"},
 ]
 
 [package.dependencies]
@@ -996,6 +996,27 @@ doc = ["jupytext", "matplotlib (>2)", "myst-nb", "numpydoc", "pooch", "pydata-sp
 test = ["asv", "gmpy2", "mpmath", "pooch", "pytest", "pytest-cov", "pytest-timeout", "pytest-xdist", "scikit-umfpack", "threadpoolctl"]
 
 [[package]]
+name = "seaborn"
+version = "0.13.0"
+description = "Statistical data visualization"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "seaborn-0.13.0-py3-none-any.whl", hash = "sha256:70d740828c48de0f402bb17234e475eda687e3c65f4383ea25d0cc4728f7772e"},
+    {file = "seaborn-0.13.0.tar.gz", hash = "sha256:0e76abd2ec291c655b516703c6a022f0fd5afed26c8e714e8baef48150f73598"},
+]
+
+[package.dependencies]
+matplotlib = ">=3.3,<3.6.1 || >3.6.1"
+numpy = ">=1.20,<1.24.0 || >1.24.0"
+pandas = ">=1.2"
+
+[package.extras]
+dev = ["flake8", "flit", "mypy", "pandas-stubs", "pre-commit", "pytest", "pytest-cov", "pytest-xdist"]
+docs = ["ipykernel", "nbconvert", "numpydoc", "pydata_sphinx_theme (==0.10.0rc2)", "pyyaml", "sphinx (<6.0.0)", "sphinx-copybutton", "sphinx-design", "sphinx-issues"]
+stats = ["scipy (>=1.7)", "statsmodels (>=0.12)"]
+
+[[package]]
 name = "setuptools"
 version = "68.2.2"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
@@ -1107,4 +1128,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11,<3.12"
-content-hash = "d433ee82b8aab94c2da5cdf34b2d2f8146f22ac546d66fd381bf96ad8474e063"
+content-hash = "e3f66ddf546e16841acf71b61379ea50f131f13ff8d54eec50f50a57037dcbcb"
