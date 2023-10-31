@@ -32,7 +32,6 @@ scaler.fit(x_train)
 x_train_std = scaler.transform(x_train)
 x_test_std = scaler.transform(x_test)
 
-# min temperatures
 fig, axs = plt.subplots(1, 3, figsize=(15, 5))
 for i, method in enumerate(['pso', 'ga', 'backpropagation']):
     model = NeuralNetwork.load(f'best_models/prediction/{method}_min.pkl')
@@ -57,6 +56,14 @@ fig.suptitle('Predição (Temperatura Mínima) - Conjunto de Teste')
 fig.savefig('figures/pred_min_temp_curves.png', bbox_inches='tight')
 
 # max temperatures
+x, y = create_window(max_temps, window_size=3)
+(x_train, y_train), (x_test, y_test) = split_train_test(
+    x, y, 0.8, sequential=True)
+scaler = MinMaxScaler()
+scaler.fit(x_train)
+x_train_std = scaler.transform(x_train)
+x_test_std = scaler.transform(x_test)
+
 fig, axs = plt.subplots(1, 3, figsize=(15, 5))
 for i, method in enumerate(['pso', 'ga', 'backpropagation']):
     model = NeuralNetwork.load(f'best_models/prediction/{method}_max.pkl')
