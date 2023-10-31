@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
 from evolutionary_programming.neural_network import NeuralNetwork
 from evolutionary_programming.data_processing import (
     fetch_csv_to_numpy, create_window, split_train_test, MinMaxScaler)
