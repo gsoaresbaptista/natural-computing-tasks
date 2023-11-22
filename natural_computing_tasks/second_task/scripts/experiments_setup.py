@@ -32,12 +32,12 @@ class NeuralNetworkArchitectures:
             [
                 DenseLayer(
                     4,
-                    10,
+                    5,
                     'tanh',
                     regularization_strength=PREDICTION_REGULARIZATION,
                 ),
                 DenseLayer(
-                    10,
+                    5,
                     3,
                     'linear',
                     regularization_strength=PREDICTION_REGULARIZATION,
@@ -51,7 +51,7 @@ class DecodeGuides:
     @staticmethod
     def iris_guide() -> list:
         _, guide = encode_neural_network(
-            NeuralNetworkArchitectures.prediction_architecture()
+            NeuralNetworkArchitectures.iris_architecture()
         )
         return guide
 

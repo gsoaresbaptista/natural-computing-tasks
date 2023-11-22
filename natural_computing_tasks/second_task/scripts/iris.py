@@ -1,6 +1,6 @@
 from evolutionary_programming.neural_network import encode_neural_network
 from evolutionary_programming.objective_function import (
-    RootMeanSquaredErrorForNN
+    AccuracyErrorForNN
 )
 from evolutionary_programming.optimization import (
     GeneticAlgorithm,
@@ -79,10 +79,10 @@ class IrisExperiment:
             history = []
         else:
             # optimize neural networks using RMSE function
-            rmse = RootMeanSquaredErrorForNN(
+            acc = AccuracyErrorForNN(
                 x_train, y_train, self._decode_guide,
                 PREDICTION_REGULARIZATION)
-            self._optimization_method.optimize(2000, rmse)
+            self._optimization_method.optimize(2000, acc)
 
             # get data
             best_individual = self._optimization_method.best_individual
@@ -98,5 +98,5 @@ class IrisExperiment:
 
 if __name__ == '__main__':
     # example of use
-    exp = IrisExperiment('BACKPROPAGATION')
-    best_individual, _, _ = exp.run()
+    exp = IrisExperiment('GA')
+    bf, best_individual, _ = exp.run()
