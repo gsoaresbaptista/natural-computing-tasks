@@ -94,7 +94,7 @@ class NeuralNetworkArchitectures:
                 ),
                 DenseLayer(
                     20,
-                    1,
+                    2,
                     'linear',
                     regularization_strength=PREDICTION_REGULARIZATION,
                 ),
@@ -208,6 +208,36 @@ class DatasetsDownloader:
             'inverse_fn': lambda x: scaler.inverse_transform(x),
         }
 
+    @staticmethod
+    def heart() -> np.ndarray:
+        # download data
+        csv = fetch_csv_to_numpy(heart_url, header=True, convert=True)
+        data = np.array(csv[1:]).squeeze()
+        columns = csv[0]
+        df = pd.DataFrame(data.T, columns=columns)
 
-if __name__ == '__main__':
-    print(DatasetsDownloader.hepatitis()['processed'][0][0])
+        x = df.iloc[:, :-1].values
+        y = df.iloc[:, -1].values
+
+        # split data
+        ((x_train, y_train), (x_test, y_test)) = split_train_test(
+            x, y, train_percentage=0.8, sequential=False
+        )
+
+        # preprocess data
+        scaler = MinMaxScaler()
+        scaler.fit(x_train)
+        x_train = scaler.transform(x_train)
+        x_test = scaler.transform(x_test)
+
+        size, rnd = len(x_train), np.random.RandomState(0)
+        indices = rnd.choice(range(size), size, replace=False)
+        x_train = x_train[indices]
+        y_train = y_train[indices].reshape(-1, 1)
+        y_test = y_test.reshape(-1, 1)
+
+        return {
+            'indices': np.argsort(indices),
+            'processed': ((x_train, y_train), (x_test, y_test)),
+            'inverse_fn': lambda x: scaler.inverse_transform(x),
+        }
