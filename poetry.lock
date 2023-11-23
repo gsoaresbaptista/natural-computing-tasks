@@ -283,13 +283,13 @@ tests = ["pytest", "pytest-cov", "pytest-xdist"]
 
 [[package]]
 name = "evolutionary-programming"
-version = "0.8.0"
+version = "0.8.1"
 description = ""
 optional = false
 python-versions = ">=3.10,<3.12"
 files = [
-    {file = "evolutionary_programming-0.8.0-cp311-cp311-manylinux_2_38_x86_64.whl", hash = "sha256:890c4662a22ff6653e6e51ca15c273af1c86320255f5455e7d7c466a3d579560"},
-    {file = "evolutionary_programming-0.8.0.tar.gz", hash = "sha256:1d8fee7ea95f724db7895c9ad571e39ead8a8b8de5fb2a0e3439c040a0588ab1"},
+    {file = "evolutionary_programming-0.8.1-cp311-cp311-manylinux_2_38_x86_64.whl", hash = "sha256:952dc5a916d7131b9b519bbf96a18bcb0fa05a8ddda231b33ecedd329ee95865"},
+    {file = "evolutionary_programming-0.8.1.tar.gz", hash = "sha256:dff2ffc3d3bf37da787824c394a2d9ef4d7cc4eaffe8cb1d51899b9968b9645a"},
 ]
 
 [package.dependencies]
@@ -1128,4 +1128,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11,<3.12"
-content-hash = "f9a5de7a236315d1c6f8ff580ad216139f3a0ad537a78366d943f4e85e9d3798"
+content-hash = "e3ced939434fec496c2c5f6c063a2d41f58a57abc95466d8a6aaad9779bae579"
