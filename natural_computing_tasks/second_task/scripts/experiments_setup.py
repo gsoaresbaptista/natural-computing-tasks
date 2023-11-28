@@ -26,7 +26,6 @@ heart_url = (
     'datasets/main/datasets/heart_disease.csv'
 )
 
-np.random.seed(42)
 
 PREDICTION_REGULARIZATION = 0.0
 REGRESSION_REGULARIZATION = 1e-4
@@ -137,7 +136,6 @@ class DatasetsDownloader:
         x = np.concatenate(data[:-1], axis=1)
         y = one_hot.fit_transform(data[-1].reshape(-1, 1))
 
-        #
         ((x_train, y_train), (x_test, y_test)) = split_train_test(
             x, y, train_percentage=0.8, sequential=False
         )

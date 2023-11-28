@@ -1,4 +1,5 @@
-from evolutionary_programming.neural_network import encode_neural_network
+from utils import accuracy_test
+from evolutionary_programming.neural_network import encode_neural_network, decode_neural_network
 from evolutionary_programming.objective_function import (
     AccuracyErrorForNN
 )
@@ -71,7 +72,7 @@ class IrisExperiment:
         if self._backpropagation:
             # optimize neural networks using backpropagation algorithm
             model = NeuralNetworkArchitectures.iris_architecture()
-            model.fit(x_train, y_train, epochs=5000)
+            model.fit(x_train, y_train, epochs=15000)
 
             # get data
             best_fitness = model.evaluate(x_test, y_test)
@@ -89,7 +90,12 @@ class IrisExperiment:
             best_fitness = self._optimization_method.best_fitness
             history = self._optimization_method.history
 
+            model = decode_neural_network(best_individual, self._decode_guide)
+
+        acc = accuracy_test(model, x_test, y_test)
+
         return (
+            acc,
             best_fitness,
             best_individual,
             history,
@@ -98,5 +104,6 @@ class IrisExperiment:
 
 if __name__ == '__main__':
     # example of use
-    exp = IrisExperiment('GA')
-    bf, best_individual, _ = exp.run()
+    exp = IrisExperiment('BACKPROPAGATION')
+    acc, bf, best_individual, _ = exp.run()
+    print(acc)
