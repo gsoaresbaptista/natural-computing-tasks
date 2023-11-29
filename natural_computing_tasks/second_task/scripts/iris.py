@@ -72,7 +72,7 @@ class IrisExperiment:
         if self._backpropagation:
             # optimize neural networks using backpropagation algorithm
             model = NeuralNetworkArchitectures.iris_architecture()
-            model.fit(x_train, y_train, epochs=15000)
+            model.fit(x_train, y_train, epochs=20000)
 
             # get data
             best_fitness = model.evaluate(x_test, y_test)
@@ -104,6 +104,6 @@ class IrisExperiment:
 
 if __name__ == '__main__':
     # example of use
-    exp = IrisExperiment('BACKPROPAGATION')
-    acc, bf, best_individual, _ = exp.run()
+    exp = IrisExperiment('PSO')
+    acc, bf, best_individual, hist = exp.run()
     print(acc)

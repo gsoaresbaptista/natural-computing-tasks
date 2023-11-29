@@ -72,7 +72,7 @@ class HeartExperiment:
         if self._backpropagation:
             # optimize neural networks using backpropagation algorithm
             model = NeuralNetworkArchitectures.heart_architecture()
-            model.fit(x_train, y_train, epochs=15000)
+            model.fit(x_train, y_train, epochs=20000)
 
             # get data
             best_fitness = model.evaluate(x_test, y_test)
@@ -105,5 +105,6 @@ class HeartExperiment:
 if __name__ == '__main__':
     # example of use
     exp = HeartExperiment('BACKPROPAGATION')
-    acc, bf, best_individual, _ = exp.run()
+    acc, bf, best_individual, history = exp.run()
+    print(history)
     print(acc)

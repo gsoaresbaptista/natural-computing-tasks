@@ -12,7 +12,12 @@ def accuracy_test(model: NeuralNetwork, x_test: np.ndarray, y_test: np.ndarray) 
         softmax_probs = exp_logits / np.sum(exp_logits, axis=1, keepdims=True)
         return softmax_probs
 
-    y_pred = np.argmax(softmax(y_pred), axis=1)
-    y_real = np.argmax(y_test, axis=1)
+    logits = np.argmax(softmax(y_pred), axis=1)
+    y_pred = np.zeros_like(y_test)
+
+    for i, logit in enumerate(logits):
+        y_pred[i, logit] = 1
+
+    y_real = y_test
 
     return accuracy_score(y_real, y_pred)

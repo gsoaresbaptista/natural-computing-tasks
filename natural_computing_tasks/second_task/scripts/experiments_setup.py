@@ -41,12 +41,12 @@ class NeuralNetworkArchitectures:
             [
                 DenseLayer(
                     4,
-                    5,
+                    10,
                     'tanh',
                     regularization_strength=PREDICTION_REGULARIZATION,
                 ),
                 DenseLayer(
-                    5,
+                    10,
                     3,
                     'linear',
                     regularization_strength=PREDICTION_REGULARIZATION,
@@ -64,12 +64,12 @@ class NeuralNetworkArchitectures:
             [
                 DenseLayer(
                     16,
-                    20,
+                    50,
                     'tanh',
                     regularization_strength=PREDICTION_REGULARIZATION,
                 ),
                 DenseLayer(
-                    20,
+                    50,
                     2,
                     'linear',
                     regularization_strength=PREDICTION_REGULARIZATION,
@@ -87,12 +87,12 @@ class NeuralNetworkArchitectures:
             [
                 DenseLayer(
                     13,
-                    20,
+                    50,
                     'tanh',
                     regularization_strength=PREDICTION_REGULARIZATION,
                 ),
                 DenseLayer(
-                    20,
+                    50,
                     2,
                     'linear',
                     regularization_strength=PREDICTION_REGULARIZATION,
@@ -178,10 +178,10 @@ class DatasetsDownloader:
         for column in columns_to_encoder:
             df[column] = LabelEncoder().fit_transform(df[column])
 
+        one_hot = OneHotEncoder(sparse_output=False)
         df = df.reset_index()
-
         x = df.iloc[:, 1:-1].values
-        y = df.iloc[:, -1].values
+        y = one_hot.fit_transform(df.iloc[:, -1].values.reshape(-1, 1))
 
         # split data
         ((x_train, y_train), (x_test, y_test)) = split_train_test(
@@ -197,8 +197,7 @@ class DatasetsDownloader:
         size, rnd = len(x_train), np.random.RandomState(0)
         indices = rnd.choice(range(size), size, replace=False)
         x_train = x_train[indices]
-        y_train = y_train[indices].reshape(-1, 1)
-        y_test = y_test.reshape(-1, 1)
+        y_train = y_train[indices]
 
         return {
             'indices': np.argsort(indices),
@@ -214,8 +213,9 @@ class DatasetsDownloader:
         columns = csv[0]
         df = pd.DataFrame(data.T, columns=columns)
 
+        one_hot = OneHotEncoder(sparse_output=False)
         x = df.iloc[:, :-1].values
-        y = df.iloc[:, -1].values
+        y = one_hot.fit_transform(df.iloc[:, -1].values.reshape(-1, 1))
 
         # split data
         ((x_train, y_train), (x_test, y_test)) = split_train_test(
@@ -231,8 +231,7 @@ class DatasetsDownloader:
         size, rnd = len(x_train), np.random.RandomState(0)
         indices = rnd.choice(range(size), size, replace=False)
         x_train = x_train[indices]
-        y_train = y_train[indices].reshape(-1, 1)
-        y_test = y_test.reshape(-1, 1)
+        y_train = y_train[indices]
 
         return {
             'indices': np.argsort(indices),

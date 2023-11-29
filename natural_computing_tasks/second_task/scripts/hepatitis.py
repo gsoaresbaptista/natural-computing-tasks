@@ -72,7 +72,7 @@ class HepatitisExperiment:
         if self._backpropagation:
             # optimize neural networks using backpropagation algorithm
             model = NeuralNetworkArchitectures.hepatitis_architecture()
-            model.fit(x_train, y_train, epochs=15000)
+            model.fit(x_train, y_train, epochs=20000)
 
             # get data
             best_fitness = model.evaluate(x_test, y_test)
@@ -104,6 +104,6 @@ class HepatitisExperiment:
 
 if __name__ == '__main__':
     # example of use
-    exp = HepatitisExperiment('BACKPROPAGATION')
+    exp = HepatitisExperiment('PSO')
     acc, bf, best_individual, _ = exp.run()
     print(acc)
