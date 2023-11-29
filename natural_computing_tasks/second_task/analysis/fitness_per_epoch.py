@@ -26,10 +26,7 @@ plt.cla()
 
 # heart
 ga = np.load('best_histories/ga_heart.npy')
-pso = np.load('best_histories/history_10.npy')
-
-print(ga)
-print(pso)
+pso = np.load('best_histories/pso_heart.npy')
 
 last_result, last_x = float('inf'), 0
 
@@ -40,14 +37,14 @@ for i in range(len(ga)):
 x = np.arange(0, last_x)
 sns.lineplot(x=x, y=pso[:last_x], label='PSO')
 sns.lineplot(x=x, y=ga[:last_x], label='GA')
-plt.title('Fitness por Iteração - Iris')
+plt.title('Fitness por Iteração - Heart')
 plt.xlabel('Iteração')
 plt.ylabel('Fitness')
 plt.savefig('figures/heart.png', bbox_inches='tight')
 plt.cla()
 
 
-# heart
+# hepatitis
 ga = np.load('best_histories/ga_hepatitis.npy')
 pso = np.load('best_histories/pso_hepatitis.npy')
 
@@ -60,7 +57,7 @@ for i in range(len(ga)):
 x = np.arange(0, last_x)
 sns.lineplot(x=x, y=pso[:last_x], label='PSO')
 sns.lineplot(x=x, y=ga[:last_x], label='GA')
-plt.title('Fitness por Iteração - Iris')
+plt.title('Fitness por Iteração - Hepatitis')
 plt.xlabel('Iteração')
 plt.ylabel('Fitness')
 plt.savefig('figures/hepatitis.png', bbox_inches='tight')
