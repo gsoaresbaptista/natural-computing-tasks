@@ -28,7 +28,7 @@ heart_url = (
 
 
 PREDICTION_REGULARIZATION = 0.0
-REGRESSION_REGULARIZATION = 1e-4
+REGRESSION_REGULARIZATION = 0.0
 
 
 class NeuralNetworkArchitectures:

@@ -27,15 +27,15 @@ df_heart = df[df['Dataset'] == 'heart']
 df_hepatitis = df[df['Dataset'] == 'hepatitis']
 
 sns.boxplot(x=df_iris['Method_str'],
-            y=df_iris['Best Fitness'], ax=axs[0])
+            y=df_iris['Accuracy'], ax=axs[0])
 axs[0].set(title='Iris', ylabel='Fitness', xlabel='Método')
 
 sns.boxplot(x=df_heart['Method_str'],
-            y=df_heart['Best Fitness'], ax=axs[1])
+            y=df_heart['Accuracy'], ax=axs[1])
 axs[1].set(title='Heart', ylabel='Fitness', xlabel='Método')
 
 sns.boxplot(x=df_hepatitis['Method_str'],
-            y=df_hepatitis['Best Fitness'], ax=axs[2])
+            y=df_hepatitis['Accuracy'], ax=axs[2])
 axs[2].set(title='Hepatitis', ylabel='Fitness', xlabel='Método')
 
 fig.savefig('figures/boxplots.png', bbox_inches='tight')
